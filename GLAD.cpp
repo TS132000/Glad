@@ -5,7 +5,7 @@
 #include <time.h>
 #include<windows.h>
 using namespace std;
-double item[42624],person[60],test,test2,zj[42625];
+double item[42625],person[60],test,test2,zj[42625];
 
 double gaussrand()
 {
@@ -40,7 +40,7 @@ double gaussrand()
 int Initialize()
 {
     ifstream in("question_full_data_b.txt");
-    ofstream out("question_full_data_E_TEST.txt");
+    //ofstream out("question_full_data_E_TEST.txt");
     char buffer[256];
     double data_true,data_false;
     int temp,a,b,c;
@@ -79,12 +79,77 @@ int Initialize()
         }
 
     }
-    for (int l=1;l<42625;l++)
+    /*for (int l=1;l<42625;l++)
     {
         out<<l<<" "<<zj[l]<<endl;
     }
+    in.close();*/
+    //out.close();
+}
+
+int Max()
+{
+    //========================================================================================================item
+    double learning_rate,sum;
+    learning_rate=0.5;
+    sum=0;
+    ifstream in("question_full_data_b.txt");
+    //ofstream out("question_full_data_E_TEST.txt");
+    char buffer[256];
+    int temp,a,b,c;
+    temp=1;
+    while(!in.eof())
+    {
+        in.getline(buffer,20);
+        sscanf(buffer,"%d %d %d",&a,&b,&c);
+        if (temp!=a)
+        {
+            item[temp]+=sum*learning_rate;
+            temp=a;
+            sum=0;
+        }
+        if (temp==a)
+        {
+            if (c==1)
+                sum+=((item[a]*exp(-person[b]*item[a]))*zj[a])/(1+exp(-person[b]*item[a]));
+            if (c==0)
+                sum+=((item[a]*exp(-person[b]*item[a]))*(1-zj[a]))/(1+exp(-person[b]*item[a]));
+        }
+        if (a==42624)
+        {
+            item[temp]+=sum*learning_rate;
+        }
+
+    }
     in.close();
-    out.close();
+    //============================================================================================================person
+    ifstream in2("question_full_data_person.txt");
+    temp=1;
+    sum=0;
+    while(!in.eof())
+    {
+        in.getline(buffer,20);
+        sscanf(buffer,"%d %d %d",&a,&b,&c);
+        if (temp!=b)
+        {
+            person[temp]+=sum*learning_rate;
+            temp=b;
+            sum=0;
+        }
+        if (temp==b)
+        {
+            if (c==1)
+                sum+=((person[b]*exp(-person[b]*item[a]))*zj[a])/(1+exp(-person[b]*item[a]));
+            if (c==0)
+                sum+=((person[b]*exp(-person[b]*item[a]))*(1-zj[a]))/(1+exp(-person[b]*item[a]));
+        }
+        if (b==57)
+        {
+            person[b]+=sum*learning_rate;
+        }
+
+    }
+    in2.close();
 }
 
 int main()
@@ -108,7 +173,19 @@ int main()
     {
         zj[k]=-1;
     }
-    //======================================================================================================E²½
-    Initialize();
+    for (int han=0;han<100;han++)
+    {
+        cout<<han<<endl;
+        //======================================================================================================E
+        Initialize();
+        //======================================================================================================M
+        Max();
+    }
+    ofstream out("question_full_data_result.txt");
+    for (int han2=1;han2<42625;han2++)
+    {
+        out<<han2<<" "<<zj[han2]<<endl;
+    }
+
     return 0;
 }
