@@ -91,7 +91,7 @@ int Max()
 {
     //========================================================================================================item
     double learning_rate,sum;
-    learning_rate=0.5;
+    learning_rate=0.005;
     sum=0;
     ifstream in("question_full_data_b.txt");
     //ofstream out("question_full_data_E_TEST.txt");
@@ -111,24 +111,27 @@ int Max()
         if (temp==a)
         {
             if (c==1)
-                sum+=((item[a]*exp(-person[b]*item[a]))*zj[a])/(1+exp(-person[b]*item[a]));
+                sum+=((person[b]*exp(-person[b]*item[a]))*(2*zj[a]-1))/(1+exp(-person[b]*item[a]));
             if (c==0)
-                sum+=((item[a]*exp(-person[b]*item[a]))*(1-zj[a]))/(1+exp(-person[b]*item[a]));
+                sum+=((person[b]*exp(-person[b]*item[a]))*(1-2*zj[a]))/(1+exp(-person[b]*item[a]));
         }
         if (a==42624)
         {
-            item[temp]+=sum*learning_rate;
+            item[a]+=sum*learning_rate;
+            if (item[a]<0)
+                item[a]=0;
         }
 
     }
     in.close();
+
     //============================================================================================================person
     ifstream in2("question_full_data_person.txt");
     temp=1;
     sum=0;
-    while(!in.eof())
+    while(!in2.eof())
     {
-        in.getline(buffer,20);
+        in2.getline(buffer,20);
         sscanf(buffer,"%d %d %d",&a,&b,&c);
         if (temp!=b)
         {
@@ -139,9 +142,9 @@ int Max()
         if (temp==b)
         {
             if (c==1)
-                sum+=((person[b]*exp(-person[b]*item[a]))*zj[a])/(1+exp(-person[b]*item[a]));
+                sum+=((item[a]*exp(-person[b]*item[a]))*(2*zj[a]-1))/(1+exp(-person[b]*item[a]));
             if (c==0)
-                sum+=((person[b]*exp(-person[b]*item[a]))*(1-zj[a]))/(1+exp(-person[b]*item[a]));
+                sum+=((item[a]*exp(-person[b]*item[a]))*(1-2*zj[a]))/(1+exp(-person[b]*item[a]));
         }
         if (b==57)
         {
@@ -163,17 +166,29 @@ int main()
         testb=gaussrand()*0.1+1;
         person[i]=testb;
     }
+    ofstream out5("question_full_data_initial_a.txt");
+    for (int han2=1;han2<58;han2++)
+    {
+        out5<<han2<<" "<<person[han2]<<endl;
+    }
+    out5.close();
     for (int j=1;j<42625;j++)
     {
         double testc;
         testc=gaussrand()*0.1+1;
         item[j]=testc;
     }
+    ofstream out4("question_full_data_initial_b.txt");
+    for (int han2=1;han2<42625;han2++)
+    {
+        out4<<han2<<" "<<item[han2]<<endl;
+    }
+    out4.close();
     for (int k=1;k<42625;k++)
     {
         zj[k]=-1;
     }
-    for (int han=0;han<100;han++)
+    for (int han=0;han<10;han++)
     {
         cout<<han<<endl;
         //======================================================================================================E
@@ -186,6 +201,18 @@ int main()
     {
         out<<han2<<" "<<zj[han2]<<endl;
     }
-
+    out.close();
+    ofstream out2("question_full_data_result_a.txt");
+    for (int han2=1;han2<58;han2++)
+    {
+        out2<<han2<<" "<<person[han2]<<endl;
+    }
+    out2.close();
+    ofstream out3("question_full_data_result_b.txt");
+    for (int han2=1;han2<42625;han2++)
+    {
+        out3<<han2<<" "<<item[han2]<<endl;
+    }
+    out3.close();
     return 0;
 }
